@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Süskind</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery -->
+    <script src="js/cart.js"></script> <!-- Script de gestion du panier -->
+</head>
+<body>
+    <header>
+        <!-- Navigation de la page -->
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="product.html">Product</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+        
+        <div class="header-mobile">
+            <a class="cart-icon" href="#" id="cart-icon">
+                <img src="img/icon/shopping-cart.svg" alt="Shopping Cart" i>
+                <span id="cart-count" class="cart-mark">0</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Contenu des produits -->
+    <div class="products">
+        <div class="product-card" data-product-id="1">
+            <img src="img/product/product-1.png" alt="RUBY">
+            <h3>RUBY</h3>
+            <p>$1,380</p>
+            <button class="add-to-cart">Add to Cart</button>
+        </div>
+
+        <div class="product-card" data-product-id="2">
+            <img src="img/product/product-2.png" alt="SAPPHIRE">
+            <h3>SAPPHIRE</h3>
+            <p>$1,580</p>
+            <button class="add-to-cart">Add to Cart</button>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="cart-modal">
+        <h2>Your Cart</h2>
+        <div id="cart-items"></div>
+        <button id="checkout-button">Checkout</button>
+    </div>
+
+    <footer>
+        <p>© 2020 Süskind. All rights reserved.</p>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            var cart = [];
+
+            // Ajouter un produit au panier
+            $('.add-to-cart').click(function() {
+                var productId = $(this).closest('.product-card').data('product-id');
+                var productName = $(this).closest('.product-card').find('h3').text();
+                var productPrice = $(this).closest('.product-card').find('p').text();
+
+                // Ajouter l'article au panier
+                cart.push({ id: productId, name: productName, price: productPrice });
+
+                // Mettre à jour l'affichage du panier
+                updateCart();
+            });
+
+            // Ouvrir le modal du panier
+            $('#cart-icon').click(function() {
+                $('#cart-modal').toggle();
+                updateCartModal();
+            });
+
+            // Mettre à jour l'affichage du panier
+            function updateCart() {
+                $('#cart-count').text(cart.length); // Mettre à jour le compteur du panier
+            }
+
+            // Mettre à jour l'affichage des articles dans le modal
+            function updateCartModal() {
+                var cartItemsHTML = '';
+                cart.forEach(function(item) {
+                    cartItemsHTML += `<div class="cart-item">
+                                        <p>${item.name} - ${item.price}</p>
+                                      </div>`;
+                });
+                $('#cart-items').html(cartItemsHTML);
+            }
+
+            // Gérer le checkout (ici juste un simple log)
+            $('#checkout-button').click(function() {
+                alert('Proceeding to checkout!');
+            });
+        });
+    </script>
+</body>
+</html>
