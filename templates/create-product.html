@@ -6,23 +6,23 @@
     
     <title>Süskind</title>
 
-    <link rel="shortcut icon" href="img/logo/Süskind-title.png">
+    <link rel="shortcut icon" href="../static/img/logo/Süskind-title.png">
     <meta name='description' content='the website of perfume shop' />
 
     <meta property="og:title" content="Süskind" />
     <meta property="og:description" content="the website of perfume shop">
     <meta property="og:type" content="website" />
     <meta property="og:url" content="Süskind" />
-    <meta property="og:image" content="img/main-banner.png" />
+    <meta property="og:image" content="../static/img/main-banner.png" />
 
-    <link href="img/logo/Süskind.png" rel="apple-touch-icon" />
+    <link href="../static/img/logo/Süskind.png" rel="apple-touch-icon" />
 
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 
-    <link rel="stylesheet" href="css/all.css">
+    <link rel="stylesheet" href="../static/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
-    <script src="js/jquery-3.5.1.min.js"></script>
-    <script src="js/all.js"></script>
+    <script src="../static/js/jquery-3.5.1.min.js"></script>
+    <script src="../static/js/all.js"></script>
 </head>
 <body>
     <header class="position-relative">
@@ -50,10 +50,10 @@
                 </ul>
                 <div class="header-mobile d-flex d-lg-none align-items-center">
                     <a class="cart-m position-relative" href="#">
-                        <img src="./img/icon/shopping-cart.svg" alt="shopping-cart">
+                        <img src="./../img/icon/shopping-cart.svg" alt="shopping-cart">
                         <p class="cart-mark rounded-circle bg-primary text-white">3</p>
                     </a>
-                    <a class="ham" href="#"><img src="img/icon/bars.svg" alt="ham"></a>
+                    <a class="ham" href="#"><img src="../img/icon/bars.svg" alt="ham"></a>
                 </div>
             </nav>
         </div>
@@ -79,7 +79,7 @@
                 <div class="col-12 col-lg-3 text-dark"></div>
                     <div class="col-12 col-lg-6 col-lg-7">
                         <h3 class="h6 border-dark border-bottom pb-2">Create a new product</h3>
-                        <form class="text-dark mb-5">
+                        <form class="text-dark mb-5" method="POST" action="/add_product">
                             <div class="form-group row">
                                 <label for="inputName" class="col-4 col-md-3 col-form-label">Name</label>
                                 <div class="col-7 col-md-8">
@@ -137,6 +137,12 @@
                                         <option>Cedar</option>
                                     </select>
                                 </div> 
+                            </div>
+                            <div class="form-group row">
+                                <label for="inputName" class="col-4 col-md-3 col-form-label">Prix</label>
+                                <div class="col-7 col-md-8">
+                                    <input type="text" class="form-control" id="inputName" placeholder="">
+                                </div>
                             </div>
                             <div class="form-group row">
                             <div class="offset-4 col-8 offset-md-3">
