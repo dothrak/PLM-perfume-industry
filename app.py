@@ -23,7 +23,7 @@ def add_product():
     name = request.form['name']
     ingredient1 = request.form['ingredient1']
     ingredient2 = request.form['ingredient2']
-    prix = request.form['prix']
+    prix = request.form['price']
 
     conn = connect_db()
     cursor = conn.cursor()
@@ -35,6 +35,26 @@ def add_product():
     conn.close()
 
     return redirect(url_for('create_product'))
+
+@app.route('/existing-products')
+def existing_products():
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, name, ingredient1, ingredient2, prix FROM produit ORDER BY id ASC")
+    products = cursor.fetchall()
+    conn.close()
+
+    return render_template('existing-products.html', products=products)
+
+@app.route('/delete-product/<int:product_id>', methods=['DELETE'])
+def delete_product(product_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM produit WHERE id = ?", (product_id,))
+    conn.commit()
+    conn.close()
+    return jsonify(success=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
