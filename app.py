@@ -7,6 +7,7 @@ app.secret_key = 'my_secret_key'
 # Fonction pour se connecter à la base de données
 def connect_db():
     conn = sqlite3.connect('BDD.db')
+    conn.row_factory = sqlite3.Row  # Pour récupérer les résultats sous forme de dictionnaire
     return conn
 
 @app.route('/')
@@ -42,7 +43,7 @@ def login():
     return render_template('login.html')
 
 def get_user_role(email, password):
-    conn = sqlite3.connect('BDD.db')
+    conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("SELECT role FROM credentials WHERE email=? AND password=?", (email, password))
     result = cursor.fetchone()
@@ -62,10 +63,6 @@ def order():
 @app.route('/chemist')
 def chemist():
     return render_template('chemist.html')
-
-@app.route('/production-status')
-def productionstatus():
-    return render_template('production-status.html')
 
 @app.route('/creator')
 def creator():
@@ -122,7 +119,6 @@ def delete_product(product_id):
     return jsonify(success=True)
 
 def get_ingredient_quantity(ingredient_name):
-    # Récupérer la quantité d'un ingrédient depuis la table 'ingredient'
     conn = sqlite3.connect('BDD.db')
     cursor = conn.cursor()
     cursor.execute("SELECT quantity FROM ingredient WHERE name=?", (ingredient_name,))
@@ -131,7 +127,6 @@ def get_ingredient_quantity(ingredient_name):
     return result[0] if result else 0
 
 def update_ingredient_quantity(ingredient_name, quantity):
-    # Mettre à jour la quantité d'un ingrédient dans la table 'ingredient'
     conn = sqlite3.connect('BDD.db')
     cursor = conn.cursor()
     cursor.execute("UPDATE ingredient SET quantity = quantity - ? WHERE name = ?", (quantity, ingredient_name))
@@ -139,7 +134,6 @@ def update_ingredient_quantity(ingredient_name, quantity):
     conn.close()
 
 def add_production(product_name, quantity):
-    # Ajouter une nouvelle production dans la table 'production' avec le statut "in progress"
     conn = sqlite3.connect('BDD.db')
     cursor = conn.cursor()
     cursor.execute("INSERT INTO production (product, quantity, status) VALUES (?, ?, ?)", (product_name, quantity, 'in progress'))
@@ -148,11 +142,9 @@ def add_production(product_name, quantity):
 
 @app.route('/chemist', methods=['POST'])
 def launch_production():
-    # Récupérer les données du formulaire
     product_name = request.form['ingredient1']
     quantity = int(request.form['ingredient2'])
 
-    # Récupérer les ingrédients nécessaires pour le produit
     conn = sqlite3.connect('BDD.db')
     cursor = conn.cursor()
     cursor.execute("SELECT ingredient1, ingredient2 FROM products WHERE name=?", (product_name,))
@@ -163,39 +155,70 @@ def launch_production():
         ingredient1 = result[0]
         ingredient2 = result[1]
         
-        # Vérifier si on a assez d'ingrédients en stock
         ingredient1_quantity = get_ingredient_quantity(ingredient1)
         ingredient2_quantity = get_ingredient_quantity(ingredient2)
 
         if ingredient1_quantity >= quantity and ingredient2_quantity >= quantity:
-            # Si on a assez d'ingrédients, lancer la production
             update_ingredient_quantity(ingredient1, quantity)
             update_ingredient_quantity(ingredient2, quantity)
             add_production(product_name, quantity)
             return render_template('chemist.html', message="Production launched successfully!", message_type="success")
         else:
-            # Sinon, afficher une erreur
             return render_template('chemist.html', message="Not enough ingredients to launch production.", message_type="error")
     else:
         return render_template('chemist.html', message="Product not found.", message_type="error")
-    
+
 def get_productions():
-    # Exemple de données (assurez-vous que la logique ici est correcte)
+    conn = sqlite3.connect('BDD.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM production WHERE status = 'in progress'")
+    in_progress = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM production WHERE status = 'completed'")
+    completed = cursor.fetchall()
+
+    conn.close()
+
     return {
-        "inProgress": [
-            {"name": "Perfume 1", "status": "In progress"},
-            {"name": "Perfume 2", "status": "In progress"}
-        ],
-        "completed": [
-            {"name": "Perfume 3", "status": "Completed"}
-        ]
+        'inProgress': [{'id': row[0], 'name': row[1], 'quantity': row[2]} for row in in_progress],
+        'completed': [{'id': row[0], 'name': row[1], 'quantity': row[2]} for row in completed]
     }
 
-
-@app.route('/production-status', methods=['GET'])
-def production_status():
+@app.route('/production-status')
+def productionstatus():
     productions_data = get_productions()
-    return render_template('production-status.html', productions_data=productions_data)
+    return render_template('production-status.html', productions=productions_data)
+
+@app.route('/update-production-status', methods=['POST'])
+def update_production_status():
+    production_id = request.form.get('productionId')
+    new_status = request.form.get('status')
+
+    conn = sqlite3.connect('BDD.db')
+    cursor = conn.cursor()
+    cursor.execute("UPDATE production SET status = ? WHERE id = ?", (new_status, production_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'success': True})
+
+def get_ingredients():
+    conn = sqlite3.connect('BDD.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM ingredient")
+    ingredients = cursor.fetchall()
+
+    conn.close()
+
+    return [{'id': row[0], 'name': row[1], 'quantity': row[2]} for row in ingredients]
+
+@app.route('/inventory')
+def inventory():
+    ingredients_data = get_ingredients()
+    return render_template('inventory.html', ingredients=ingredients_data)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
