@@ -18,6 +18,18 @@ def index():
 def product():
     return render_template('product.html')
 
+@app.route('/product-women')
+def productwomen():
+    return render_template('product-women.html')
+
+@app.route('/product-men')
+def productmen():
+    return render_template('product-men.html')
+
+@app.route('/chief-product')
+def chiefproduct():
+    return render_template('chief-product.html')
+
 # Only one login route is needed here
 @app.route('/login', methods=['GET', 'POST'])
 def login():

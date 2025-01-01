@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Süskind</title>
+
+    <link rel="shortcut icon" href="../static/img/logo/Süskind-title.png">
+    <meta name='description' content='the website of perfume shop' />
+
+    <meta property="og:title" content="Süskind" />
+    <meta property="og:description" content="the website of perfume shop">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="Süskind" />
+    <meta property="og:image" content="../static/img/main-banner.png" />
+
+    <link href="../static/img/logo/Süskind.png" rel="apple-touch-icon" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <link rel="stylesheet" href="../static/css/all.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+    <script src="../static/js/jquery-3.5.1.min.js"></script>
+    <script src="../static/js/all.js"></script>
+</head>
+<body>
+    <header class="position-relative">
+        <div class="container">
+            <nav class="d-flex justify-content-between align-items-center mb-40px mb-md-0">
+                <h1 class="m-0"><a href="/" class="d-block">Süskind</a></h1>
+                <ul class="header_menu d-none d-lg-flex justify-content-between m-0">
+                    <li>
+                        <a class="h5 d-flex align-items-center text-dark font-weight-light mb-0 p-3" href="chemist">
+                            <i class="fas fa-user-alt mr-1"></i>
+                            <p class="m-0">My Page</p>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="h5 d-flex align-items-center text-dark text-center font-weight-light mb-0 p-3" href="login">
+                            <i class="fas fa-user-alt mr-1"></i>
+                            <p class="m-0">Log out</p>
+                        </a>
+                    </li>
+                </ul>
+                <div class="header-mobile d-flex d-lg-none align-items-center">
+                    <a class="cart-m position-relative" href="#">
+                        <img src="../static/img/icon/shopping-cart.svg" alt="shopping-cart">
+                        <p class="cart-mark rounded-circle bg-primary text-white">3</p>
+                    </a>
+                    <a class="ham" href="#"><img src="../static/img/icon/bars.svg" alt="ham"></a>
+                </div>
+            </nav>
+        </div>
+        <div class="container-fluid">
+            <ul class="header_menu-m d-block d-lg-none w-100 p-0">
+                <li><a href="chemist" class="d-block text-white px-0 py-3">My Page</a></li>
+            </ul>
+        </div>        
+    </header>
+    <!--Page Content Start-->
+    <div class="product_category bg-primary d-none d-lg-flex mb-80px">
+            <ul class="d-flex m-0 p-0">
+                <li><a class="d-block text-white p-3 text-center">Chemist page</a></li>
+            </ul>
+    </div>
+    <div class="member_content">
+        <div class="container">
+            <div class="row flex-lg-row-reverse">
+                <div class="col-12 col-lg-3 text-dark"></div>
+                <div class="col-12 col-lg-6 col-lg-7">
+                    <h3 class="h6 border-dark border-bottom pb-2">Inventory</h3>
+                    <div class="form-group row">
+                        <div class="col-8">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Ingredient</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ingredient in ingredients %}
+                                        <tr>
+                                            <td>{{ ingredient.name }}</td>
+                                            <td>{{ ingredient.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>                
+                <div class="col-md-3 col-lg-2 d-none d-lg-block">
+                    <h6 class="mb-4"><a href="existing-products" class="text-dark border-primary border-bottom">Existing products</a></h6>
+                    <h6 class="mb-4"><a href="production-status" class="text-dark">Production status</a></h6>
+                    <h6 class="mb-4"><a href="inventory" class="text-dark">Inventory</a></h6>
+                    <h6 class="mb-4"><a href="order" class="text-dark">Orders</a></h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
