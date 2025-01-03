@@ -64,43 +64,58 @@
                 <li><a class="d-block text-white p-3 text-center">Chief product page</a></li>
             </ul>
     </div>
-    <div class="member_content">
-        <div class="container">
-            <div class="row flex-lg-row-reverse">
-                <div class="col-12 col-lg-3 text-dark"></div>
-                <div class="col-12 col-lg-6 col-lg-7">
-                    <h3 class="h6 border-dark border-bottom pb-2">Inventory</h3>
-                    <div class="form-group row">
-                        <div class="col-8">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ingredient</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for ingredient in ingredients %}
-                                        <tr>
-                                            <td>{{ ingredient.name }}</td>
-                                            <td>{{ ingredient.quantity }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-3 col-lg-2 d-none d-lg-block">
+                <h6 class="mb-4"><a href="chief-product" class="text-dark">Projects</a></h6>
+                <h6 class="mb-4"><a href="create-project" class="text-dark">Create a project</a></h6>
+                <h6 class="mb-4"><a href="cp-products" class="text-dark border-primary border-bottom">Existing products</a></h6>
+                <h6 class="mb-4"><a href="cp-status" class="text-dark">Production status</a></h6>
+                <h6 class="mb-4"><a href="cp-stock" class="text-dark">Inventory</a></h6>
+                <h6 class="mb-4"><a href="cp-order" class="text-dark">Orders</a></h6>
+            </div>
+            <div class="col-md-9 col-lg-10">
+                <h3>Create Product</h3>
+                <div class="row">
+                    {% for product in products %}
+                    <div class="col-12 col-md-4 mb-4" id="product-card-{{ product[0] }}">
+                        <div class="product-card p-3 border rounded">
+                            <img src="../static/img/product/product-{{ product[0] }}.png" alt="{{ product[1] }} Perfume" class="img-fluid mb-3">
+                            <h5>{{ product[1] }}</h5>
+                            <p>Composition: {{ product[2] }}, {{ product[3] }}</p>
+                            <p>Price: ${{ product[4] }}</p>
+                            <button class="btn btn-danger" data-id="{{ product[0] }}" onclick="deleteProduct(this)">Delete</button>
                         </div>
                     </div>
-                </div>                
-                <div class="col-md-3 col-lg-2 d-none d-lg-block">
-                    <h6 class="mb-4"><a href="chief-product" class="text-dark border-primary border-bottom">Projects</a></h6>
-                    <h6 class="mb-4"><a href="create-project" class="text-dark">Create a project</a></h6>
-                    <h6 class="mb-4"><a href="cp-products" class="text-dark">Existing products</a></h6>
-                    <h6 class="mb-4"><a href="cp-status" class="text-dark">Production status</a></h6>
-                    <h6 class="mb-4"><a href="cp-stock" class="text-dark">Inventory</a></h6>
-                    <h6 class="mb-4"><a href="cp-order" class="text-dark">Orders</a></h6>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function deleteProduct(button) {
+            const productId = button.getAttribute('data-id');
+            if (confirm("Are you sure you want to delete this product?")) {
+                fetch(`/delete-product/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById(`product-card-${productId}`).remove();
+                    } else {
+                        alert("Product deleted.");
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while deleting the product.");
+                });
+            }
+        }
+    </script>
 </body>
 </html>

@@ -19,16 +19,12 @@ def product():
     return render_template('product.html')
 
 @app.route('/product-women')
-def productwomen():
+def product_women():
     return render_template('product-women.html')
 
 @app.route('/product-men')
-def productmen():
+def product_men():
     return render_template('product-men.html')
-
-@app.route('/chief-product')
-def chiefproduct():
-    return render_template('chief-product.html')
 
 # Only one login route is needed here
 @app.route('/login', methods=['GET', 'POST'])
@@ -48,7 +44,7 @@ def login():
             return redirect(url_for('creator'))
         elif role == 'supplier':
             return redirect(url_for('supplier'))
-        elif role == 'chief_product':
+        elif role == 'chief-product':
             return redirect(url_for('chief_product'))
         else:
             return "Invalid credentials or role not found", 401
@@ -84,9 +80,9 @@ def creator():
 def supplier():
     return render_template('supplier.html')
 
-@app.route('/chief_product')
+@app.route('/chief-product')
 def chief_product():
-    return render_template('chief_product.html')
+    return render_template('chief-product.html')
 
 @app.route('/create-product', methods=['GET'])
 def create_product():
@@ -120,6 +116,17 @@ def existing_products():
     conn.close()
 
     return render_template('existing-products.html', products=products)
+
+@app.route('/cp-products')
+def cp_products():
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, name, ingredient1, ingredient2, price FROM products ORDER BY id ASC")
+    products = cursor.fetchall()
+    conn.close()
+
+    return render_template('cp-products.html', products=products)
 
 @app.route('/delete-product/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
@@ -198,9 +205,14 @@ def get_productions():
     }
 
 @app.route('/production-status')
-def productionstatus():
+def production_status():
     productions_data = get_productions()
     return render_template('production-status.html', productions=productions_data)
+
+@app.route('/cp-status')
+def cp_status():
+    productions_data = get_productions()
+    return render_template('cp-status.html', productions=productions_data)
 
 @app.route('/update-production-status', methods=['POST'])
 def update_production_status():
@@ -230,6 +242,40 @@ def get_ingredients():
 def inventory():
     ingredients_data = get_ingredients()
     return render_template('inventory.html', ingredients=ingredients_data)
+
+@app.route('/cp-stock')
+def cp_stock():
+    ingredients_data = get_ingredients()
+    return render_template('cp-stock.html', ingredients=ingredients_data)
+
+@app.route('/cp-order', methods=['GET'])
+def show_orders():
+    conn = sqlite3.connect('BDD.db')
+    cursor = conn.cursor()
+
+    email = request.args.get('email')
+    status = request.args.get('status')
+
+    query = "SELECT * FROM orders WHERE 1=1"
+    params = []
+
+    if email:
+        query += " AND email_client = ?"
+        params.append(email)
+
+    if status:
+        query += " AND status = ?"
+        params.append(status)
+
+    cursor.execute(query, params)
+    orders = cursor.fetchall()
+
+    ongoing_orders = [order for order in orders if order[2] != 'delivered']
+    order_history = [order for order in orders if order[2] == 'delivered']
+
+    conn.close()
+
+    return render_template('cp-order.html', ongoing_orders=ongoing_orders, order_history=order_history)
 
 
 if __name__ == '__main__':

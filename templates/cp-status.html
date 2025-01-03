@@ -69,38 +69,68 @@
             <div class="row flex-lg-row-reverse">
                 <div class="col-12 col-lg-3 text-dark"></div>
                 <div class="col-12 col-lg-6 col-lg-7">
-                    <h3 class="h6 border-dark border-bottom pb-2">Inventory</h3>
-                    <div class="form-group row">
-                        <div class="col-8">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ingredient</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for ingredient in ingredients %}
-                                        <tr>
-                                            <td>{{ ingredient.name }}</td>
-                                            <td>{{ ingredient.quantity }}</td>
-                                        </tr>
+                    <h3 class="h6 border-dark border-bottom pb-2">Status</h3>
+                        <div class="form-group row">
+                            <label for="selectGender" class="col-4 col-md-3 col-form-label">Productions in progress</label>
+                            <div class="col-8">
+                                <ul>
+                                    {% for production in productions.inProgress %}
+                                        <li>
+                                            <span>{{ production.name }} ({{ production.quantity }} )</span>
+                                            <button class="btn btn-warning" data-id="{{ production.id }}" data-status="completed" onclick="updateStatus(this)">Mark as Completed</button>
+                                        </li>
                                     {% endfor %}
-                                </tbody>
-                            </table>
+                                </ul>
+                            </div>
                         </div>
+                        <div class="form-group row">
+                            <label for="selectGender" class="col-4 col-md-3 col-form-label">Productions completed</label>
+                            <div class="col-8">
+                                <ul>
+                                    {% for production in productions.completed %}
+                                        <li>
+                                            <span>{{ production.name }} ({{ production.quantity }} )</span>
+                                            <button class="btn btn-success" disabled>Completed</button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>                
+                    <div class="col-md-3 col-lg-2 d-none d-lg-block">
+                        <h6 class="mb-4"><a href="chief-product" class="text-dark">Projects</a></h6>
+                        <h6 class="mb-4"><a href="create-project" class="text-dark">Create a project</a></h6>
+                        <h6 class="mb-4"><a href="cp-products" class="text-dark">Existing products</a></h6>
+                        <h6 class="mb-4"><a href="cp-status" class="text-dark border-primary border-bottom">Production status</a></h6>
+                        <h6 class="mb-4"><a href="cp-stock" class="text-dark">Inventory</a></h6>
+                        <h6 class="mb-4"><a href="cp-order" class="text-dark">Orders</a></h6>
                     </div>
-                </div>                
-                <div class="col-md-3 col-lg-2 d-none d-lg-block">
-                    <h6 class="mb-4"><a href="chief-product" class="text-dark border-primary border-bottom">Projects</a></h6>
-                    <h6 class="mb-4"><a href="create-project" class="text-dark">Create a project</a></h6>
-                    <h6 class="mb-4"><a href="cp-products" class="text-dark">Existing products</a></h6>
-                    <h6 class="mb-4"><a href="cp-status" class="text-dark">Production status</a></h6>
-                    <h6 class="mb-4"><a href="cp-stock" class="text-dark">Inventory</a></h6>
-                    <h6 class="mb-4"><a href="cp-order" class="text-dark">Orders</a></h6>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        function updateStatus(button) {
+            const productionId = button.getAttribute('data-id');
+            const newStatus = button.getAttribute('data-status');
+
+            $.ajax({
+                url: '/update-production-status',
+                method: 'POST',
+                data: {
+                    productionId: productionId,
+                    status: newStatus
+                },
+                success: function(response) {
+                    if (response.success) {
+                        button.innerText = 'Completed';
+                        button.disabled = true;
+                    } else {
+                        alert('Failed to update production status');
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
