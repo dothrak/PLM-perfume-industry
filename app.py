@@ -4,10 +4,9 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'my_secret_key'
 
-# Fonction pour se connecter à la base de données
 def connect_db():
     conn = sqlite3.connect('BDD.db')
-    conn.row_factory = sqlite3.Row  # Pour récupérer les résultats sous forme de dictionnaire
+    conn.row_factory = sqlite3.Row 
     return conn
 
 @app.route('/')
@@ -26,14 +25,12 @@ def product_women():
 def product_men():
     return render_template('product-men.html')
 
-# Only one login route is needed here
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         
-        # Check the role from the database
         role = get_user_role(email, password)
         
         if role == 'client':
@@ -45,7 +42,7 @@ def login():
         elif role == 'supplier':
             return redirect(url_for('supplier'))
         elif role == 'chief-product':
-            return redirect(url_for('chief_product'))
+            return redirect(url_for('project_list'))
         else:
             return "Invalid credentials or role not found", 401
     return render_template('login.html')
@@ -79,10 +76,6 @@ def creator():
 @app.route('/supplier')
 def supplier():
     return render_template('supplier.html')
-
-@app.route('/chief-product')
-def chief_product():
-    return render_template('chief-product.html')
 
 @app.route('/create-product', methods=['GET'])
 def create_product():
@@ -277,6 +270,61 @@ def show_orders():
 
     return render_template('cp-order.html', ongoing_orders=ongoing_orders, order_history=order_history)
 
+@app.route('/chief-product')
+def project_list():
+    conn = sqlite3.connect('BDD.db')
+    conn.row_factory = sqlite3.Row
+    projects = conn.execute('SELECT * FROM projects ORDER BY status').fetchall()
+    conn.close()
+    
+    return render_template('chief-product.html', projects=projects)
+
+@app.route('/update_status/<int:id>', methods=['POST'])
+def update_status(id):
+    new_status = request.form['status']
+    conn = sqlite3.connect('BDD.db')
+    conn.execute('UPDATE projects SET status = ? WHERE id = ?', (new_status, id))
+    conn.commit()
+    conn.close()
+    
+    return redirect('/chief-product')
+
+@app.route('/delete_project/<int:project_id>', methods=['POST'])
+def delete_project(project_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM projects WHERE id = ?", (project_id,))
+    conn.commit()
+    conn.close()
+    return redirect('/chief-product')
+
+
+@app.route('/create-project', methods=['GET', 'POST'])
+def create_project():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        chief = request.form['chief']
+        creator = request.form['creator']
+        chemist = request.form['chemist']
+
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            INSERT INTO projects (name, description, chief, creator, chemist)
+            VALUES (?, ?, ?, ?, ?)
+        """, (name, description, chief, creator, chemist))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('create_project'))
+
+    chiefs = ['Elise Perrin', 'Marie Lefevre', 'Lucie Durand']
+    chemists = ['Bernard Martin', 'David Bernard', 'Paul Dubois', 'Sophie Lambert', 'Julien Moret']
+    creators = ['Alice Dupont', 'Pierre Laurent', 'Camille Richard']
+    return render_template('create-project.html', chiefs=chiefs, chemists=chemists, creators=creators)
 
 if __name__ == '__main__':
     app.run(debug=True)

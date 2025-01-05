@@ -69,27 +69,42 @@
             <div class="row flex-lg-row-reverse">
                 <div class="col-12 col-lg-3 text-dark"></div>
                 <div class="col-12 col-lg-6 col-lg-7">
-                    <h3 class="h6 border-dark border-bottom pb-2">Inventory</h3>
-                    <div class="form-group row">
-                        <div class="col-8">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ingredient</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for ingredient in ingredients %}
-                                        <tr>
-                                            <td>{{ ingredient.name }}</td>
-                                            <td>{{ ingredient.quantity }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    <h3 class="h6 border-dark border-bottom pb-2">Create a project</h3>
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="name">Project Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-                    </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="chief">Chief</label>
+                            <select class="form-control" id="chief" name="chief">
+                                {% for chief in chiefs %}
+                                    <option value="{{ chief }}">{{ chief }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="creator">Creator</label>
+                            <select class="form-control" id="creator" name="creator">
+                                {% for creator in creators %}
+                                    <option value="{{ creator }}">{{ creator }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="chemist">Chemist</label>
+                            <select class="form-control" id="chemist" name="chemist">
+                                {% for chemist in chemists %}
+                                    <option value="{{ chemist }}">{{ chemist }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Project</button>
+                    </form>
                 </div>                
                 <div class="col-md-3 col-lg-2 d-none d-lg-block">
                     <h6 class="mb-4"><a href="chief-product" class="text-dark">Projects</a></h6>

@@ -24,6 +24,105 @@
     <script src="../static/js/jquery-3.5.1.min.js"></script>
     <script src="../static/js/all.js"></script>
 </head>
+<style>
+    .update-btn {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition-duration: 0.4s;
+    }
+
+    .update-btn:hover {
+        background-color: white;
+        color: #4CAF50;
+        border: 2px solid #4CAF50;
+    }
+
+    select {
+        padding: 8px;
+        margin-right: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
+    .filter-select {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+    .sortable {
+        cursor: pointer;
+    }
+
+    .sorted-asc::after {
+        content: ' ▲';
+    }
+
+    .sorted-desc::after {
+        content: ' ▼';
+    }
+    #projects-table th, #projects-table td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    #projects-table th:nth-child(1),
+    #projects-table td:nth-child(1) {
+        width: 20%;
+    }
+
+    #projects-table th:nth-child(2),
+    #projects-table td:nth-child(2) {
+        width: 25%;
+    }
+
+    #projects-table th:nth-child(3),
+    #projects-table td:nth-child(3) {
+        width: 15%;
+    }
+
+    #projects-table th:nth-child(4),
+    #projects-table td:nth-child(4) {
+        width: 15%;
+    }
+
+    #projects-table th:nth-child(5),
+    #projects-table td:nth-child(5) {
+        width: 15%;
+    }
+
+    #projects-table th:nth-child(6),
+    #projects-table td:nth-child(6) {
+        width: 10%;
+    }
+    .delete-btn {
+        background-color: #f44336;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 12px;
+        transition-duration: 0.4s;
+    }
+
+    .delete-btn:hover {
+        background-color: white;
+        color: #f44336;
+        border: 2px solid #f44336;
+    }
+</style>
 <body>
     <header class="position-relative">
         <div class="container">
@@ -68,29 +167,54 @@
         <div class="container">
             <div class="row flex-lg-row-reverse">
                 <div class="col-12 col-lg-3 text-dark"></div>
-                <div class="col-12 col-lg-6 col-lg-7">
-                    <h3 class="h6 border-dark border-bottom pb-2">Inventory</h3>
-                    <div class="form-group row">
-                        <div class="col-8">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ingredient</th>
-                                        <th>Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for ingredient in ingredients %}
-                                        <tr>
-                                            <td>{{ ingredient.name }}</td>
-                                            <td>{{ ingredient.quantity }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>                
+                <div class="col-12 col-lg-10 col-lg-10">
+                    <h3 class="h6 border-dark border-bottom pb-2">Projects</h3>
+                    <div class="project-list">
+                        <br></br>
+                        <table id="projects-table" border="1" cellspacing="0" cellpadding="5">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" onclick="sortTable(0)">Project Name</th>
+                                    <th class="sortable" onclick="sortTable(1)">Description</th>
+                                    <th class="sortable" onclick="sortTable(1)">Chief</th>
+                                    <th class="sortable" onclick="sortTable(2)">Creator</th>
+                                    <th class="sortable" onclick="sortTable(3)">Chemist</th>
+                                    <th class="sortable" onclick="sortTable(4)">Status</th>
+                                    <th>Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                {% for project in projects %}
+                                <tr>
+                                    <td>{{ project.name }}</td>
+                                    <td>{{ project.description }}</td>
+                                    <td>{{ project.chief }}</td>
+                                    <td>{{ project.creator }}</td>
+                                    <td>{{ project.chemist }}</td>
+                                    <td>{{ project.status }}</td>
+                                    <td>
+                                        {% if project.status != 'Completed' %}
+                                        <form action="/update_status/{{ project.id }}" method="POST">
+                                            <select name="status" id="status">
+                                                <option value="To do" {% if project.status == 'To do' %}selected{% endif %}>To do</option>
+                                                <option value="In progress" {% if project.status == 'In progress' %}selected{% endif %}>In progress</option>
+                                                <option value="Completed" {% if project.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                            </select>
+                                            <button type="submit" class="update-btn">Update</button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <form action="/delete_project/{{ project.id }}" method="POST" style="display:inline;">
+                                            <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this project?');">Delete</button>
+                                        </form>
+                                    </td>                                    
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>                                   
+                </div>
                 <div class="col-md-3 col-lg-2 d-none d-lg-block">
                     <h6 class="mb-4"><a href="chief-product" class="text-dark border-primary border-bottom">Projects</a></h6>
                     <h6 class="mb-4"><a href="create-project" class="text-dark">Create a project</a></h6>
@@ -102,5 +226,70 @@
             </div>
         </div>
     </div>
+    <script>
+        let sortOrder = 1;
+        function sortTable(n) {
+            const table = document.getElementById("projects-table");
+            const rows = table.getElementsByTagName("TR");
+            let switching = true, i, x, y, shouldSwitch;
+            let switchcount = 0;
+
+            while (switching) {
+                switching = false;
+                for (i = 1; i < rows.length - 1; i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                    let xContent = isNaN(x.innerHTML) ? x.innerHTML.toLowerCase() : parseFloat(x.innerHTML);
+                    let yContent = isNaN(y.innerHTML) ? y.innerHTML.toLowerCase() : parseFloat(y.innerHTML);
+
+                    if (sortOrder === 1 && xContent > yContent || sortOrder === -1 && xContent < yContent) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                }
+            }
+            sortOrder = sortOrder * -1;
+
+            const headers = table.getElementsByTagName("TH");
+            for (let j = 0; j < headers.length; j++) {
+                headers[j].classList.remove("sorted-asc", "sorted-desc");
+            }
+            headers[n].classList.add(sortOrder === 1 ? "sorted-asc" : "sorted-desc");
+        }
+
+
+        function filterTable() {
+            const chiefFilter = document.getElementById("chief-filter").value.toLowerCase();
+            const creatorFilter = document.getElementById("creator-filter").value.toLowerCase();
+            const chemistFilter = document.getElementById("chemist-filter").value.toLowerCase();
+            const statusFilter = document.getElementById("status-filter").value.toLowerCase();
+            const table = document.getElementById("projects-table");
+            const rows = table.getElementsByTagName("TR");
+
+            for (let i = 1; i < rows.length; i++) {
+                const chief = rows[i].getElementsByTagName("TD")[1].innerHTML.toLowerCase();
+                const creator = rows[i].getElementsByTagName("TD")[2].innerHTML.toLowerCase();
+                const chemist = rows[i].getElementsByTagName("TD")[3].innerHTML.toLowerCase();
+                const status = rows[i].getElementsByTagName("TD")[4].innerHTML.toLowerCase();
+
+                rows[i].style.display =
+                    (chief.indexOf(chiefFilter) > -1 || !chiefFilter) &&
+                    (creator.indexOf(creatorFilter) > -1 || !creatorFilter) &&
+                    (chemist.indexOf(chemistFilter) > -1 || !chemistFilter) &&
+                    (status.indexOf(statusFilter) > -1 || !statusFilter) ? "" : "none";
+            }
+        }
+        document.getElementById("chief-filter").addEventListener("change", filterTable);
+        document.getElementById("creator-filter").addEventListener("change", filterTable);
+        document.getElementById("chemist-filter").addEventListener("change", filterTable);
+        document.getElementById("status-filter").addEventListener("change", filterTable);
+    </script>
 </body>
 </html>
