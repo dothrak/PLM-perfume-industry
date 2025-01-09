@@ -73,9 +73,10 @@
                             <h5>{{ product[1] }}</h5>
                             <p>Composition: {{ product[2] }}, {{ product[3] }}</p>
                             <p>Price: ${{ product[4] }}</p>
-                            <button class="btn btn-danger" data-id="{{ product[0] }}" onclick="deleteProduct(this)">Delete</button>
+                            <button class="btn btn-warning" data-id="{{ product[0] }}" onclick="window.location.href='/edit-product/{{ product[0] }}'">Modify</button>
+                            <button class="btn btn-danger mt-2" data-id="{{ product[0] }}" onclick="deleteProduct(this)">Delete</button>
                         </div>
-                    </div>
+                    </div>                    
                     {% endfor %}
                 </div>
             </div>

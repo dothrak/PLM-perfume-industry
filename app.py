@@ -326,5 +326,32 @@ def create_project():
     creators = ['Alice Dupont', 'Pierre Laurent', 'Camille Richard']
     return render_template('create-project.html', chiefs=chiefs, chemists=chemists, creators=creators)
 
+@app.route('/edit-product/<int:product_id>', methods=['GET', 'POST'])
+def edit_product(product_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        ingredient1 = request.form['ingredient1']
+        ingredient2 = request.form['ingredient2']
+        price = request.form['price']
+
+        cursor.execute("""
+            UPDATE products 
+            SET name = ?, ingredient1 = ?, ingredient2 = ?, price = ? 
+            WHERE id = ?
+        """, (name, ingredient1, ingredient2, price, product_id))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('existing_products'))
+
+    cursor.execute("SELECT name, ingredient1, ingredient2, price FROM products WHERE id = ?", (product_id,))
+    product = cursor.fetchone()
+    conn.close()
+
+    return render_template('edit-product.html', product=product, product_id=product_id)
+
 if __name__ == '__main__':
     app.run(debug=True)
